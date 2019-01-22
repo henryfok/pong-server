@@ -1,8 +1,14 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
+
 var http = require('http').Server(app);
 
+app.use('/css', express.static(__dirname + '/css'));
+app.use('/js', express.static(__dirname + '/js'));
+app.use('/snd', express.static(__dirname + '/snd'));
+
 app.get('/', function(req, res){
-	res.send('<h1>Hello world</h1>');
+	res.sendFile(__dirname + '/index.html');
 });
 
 http.listen(3000, function(){
