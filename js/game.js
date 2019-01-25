@@ -171,13 +171,13 @@ function init() {
 	}
 	gameStarted = false;
 	render();
+	preGameParticles();
 	window.addEventListener('keydown', function(keycode) {
 		if ((keycode.code === 'ArrowUp' || keycode.code === 'KeyW' ||
 			keycode.code === 'ArrowDown' || keycode.code === 'KeyS') && !gameStarted) {
-			start();
+			matchmaking();
 		}
 	});
-	preGameParticles();
 }
 
 var preGameReq;
@@ -185,7 +185,15 @@ var preGameReq;
 function preGameParticles() {
 	ballParticles.spawn(Math.floor(Math.random() * gameWidth), Math.floor(Math.random() * gameHeight));
 	preGameReq = requestAnimationFrame(preGameParticles);
-	
+}
+
+function matchmaking() {
+	console.log("matchmaking");
+	animateCSS('.menu', 'bounceOut', function() {
+		document.querySelector('.menu').style.visibility = 'hidden';
+		document.querySelector('.multiplayer').style.visibility = 'visible';
+		animateCSS('.multiplayer', 'bounceIn');
+	});
 }
 
 function start() {

@@ -1,4 +1,6 @@
-# pong-server
+# Pong Server
+
+Multiplayer version of pong implemented using Express.js and Socket.IO
 
 npm install
 
