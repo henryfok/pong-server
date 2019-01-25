@@ -4,11 +4,15 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+http.listen(3000, function(){
+	console.log('listening on *:3000');
+});
+
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
 app.use('/snd', express.static(__dirname + '/snd'));
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
 
@@ -16,7 +20,7 @@ var numPlayers = 0;
 var greenChosen = false;
 var blueChosen = false;
 
-io.on('connection', function(socket){
+io.on('connection', function(socket) {
 	console.log('a user connected');
 	socket.on('disconnect', function(){
 		console.log('socket colour: ' + socket.colour);
@@ -33,7 +37,7 @@ io.on('connection', function(socket){
 		console.log('user disconnected');
 	});
 
-	socket.on('choose paddle', function(colour){
+	socket.on('choose paddle', function(colour) {
 		if (socket.colour == null) {
 				numPlayers++;
 				console.log('new player!: ' + numPlayers);
@@ -57,8 +61,4 @@ io.on('connection', function(socket){
 			io.emit('game status', 'ready');
 		}
 	});
-});
-
-http.listen(3000, function(){
-	console.log('listening on *:3000');
 });
