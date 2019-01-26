@@ -84,3 +84,18 @@ function paddleSpike() {
 		}
 	}
 }
+
+function sendPaddleLocation(paddleColour, y) {
+	socket.emit(paddleColour + ' location', y);
+}
+
+function receivePaddleLocation(paddleColour) {
+	socket.on(paddleColour + ' location', function(y) {
+		// console.log(paddleColour + ' location: ' + y);
+		if (paddleColour === 'green') {
+			paddlePlayer.y = y;
+		} else if (paddleColour === 'blue') {
+			paddleEnemy.y = y;
+		}
+	});
+}
