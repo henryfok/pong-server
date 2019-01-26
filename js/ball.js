@@ -5,6 +5,7 @@ var ballSpeedStart = 15;
 var ballSpeed = ballSpeedStart;
 // var ballTragSpeed = Math.sqrt(2 * (ballSpeed * ballSpeed));
 var ballRotateSpeed = 3;
+var randAng = -50;
 
 var ball = {
 	// starting ball position and speed
@@ -21,8 +22,13 @@ var ball = {
 	height: ballHeight
 };
 
+socket.on('rand ball angle', function(deg) {
+	randAng = deg;
+	console.log('randAng: ' + randAng);
+});
+
 function randBallStart() {
-	var randAng = getRandomArbitrary(-50, 50);
+	socket.emit('new ball ang');
 	console.log('Start angle: ' + randAng);
 	ballSpeed = ballSpeedStart;
 	ball.vx = Math.cos(degToRad(randAng)) * ballSpeed;

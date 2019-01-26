@@ -61,7 +61,13 @@ io.on('connection', function(socket) {
 		if (numPlayers === 2) {
 			console.log('game ready!')
 			io.emit('game status', 'ready');
+			io.emit('rand ball angle', getRandomArbitrary(-50, 50));
 		}
+	});
+
+	socket.on('new ball ang', function() {
+		console.log('new ball angle');
+		io.emit('rand ball angle', getRandomArbitrary(-50, 50));
 	});
 
 	socket.on('green location', function(y) {
@@ -74,3 +80,7 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('blue location', y);
 	});
 });
+
+function getRandomArbitrary(min, max) {
+	return Math.random() * (max - min) + min;
+}
