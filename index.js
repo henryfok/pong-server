@@ -42,7 +42,7 @@ io.on('connection', function(socket) {
 	socket.on('choose paddle', function(colour) {
 		if (socket.colour == null) {
 				numPlayers++;
-				console.log('new player!: ' + numPlayers);
+				console.log('new player!');
 		}
 		console.log('colour: ' + colour);
 		if (colour === 'green') {
@@ -62,5 +62,15 @@ io.on('connection', function(socket) {
 			console.log('game ready!')
 			io.emit('game status', 'ready');
 		}
+	});
+
+	socket.on('green location', function(y) {
+		console.log('green location: ' + y);
+		socket.broadcast.emit('green location', y);
+	});
+
+	socket.on('blue location', function(y) {
+		console.log('blue location: ' + y);
+		socket.broadcast.emit('blue location', y);
 	});
 });

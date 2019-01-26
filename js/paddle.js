@@ -9,6 +9,7 @@ var paddleSpeed = 16;
 
 var paddlePlayer = {
 	// default player1 paddle position data
+	colour: 'green',
 	elem: document.querySelector('.paddle-player'),
 	x: 0,
 	y: gameHeight / 2 - paddleHeight / 2,
@@ -21,11 +22,13 @@ var paddlePlayer = {
 	spike: false,
 	charging: false,
 	spikeCharge: 0,
-	spikeSpeed: 25
+	spikeSpeed: 25,
+	host: true
 };
 
 var paddleEnemy = {
 	// default player2 paddle position data
+	colour: 'blue',
 	elem: document.querySelector('.paddle-enemy'),
 	x: gameWidth - paddleWidth,
 	y: gameHeight / 2 - paddleHeight / 2,
@@ -34,8 +37,12 @@ var paddleEnemy = {
 	speed: paddleSpeed,
 	moveUp: false,
 	moveDown: false,
-	difficulty: 1,
-	hasHit: false
+	hasHit: false,
+	spike: false,
+	charging: false,
+	spikeCharge: 0,
+	spikeSpeed: 25,
+	host: false
 };
 
 function flashPaddle(paddleEl) {

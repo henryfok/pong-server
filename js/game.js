@@ -1,4 +1,4 @@
-var scoreMax = 3;
+var scoreMax = 8;
 
 var screen = {
 	elem: document.querySelector('.pong'),
@@ -19,40 +19,41 @@ function rotateScreen() {
 // Space 32
 
 function addEventListeners() {
+	playerElem = session.chosenSide;
 	window.addEventListener('keydown', function(keycode) {
 		keyPressed[keycode.keyCode] = true;
 		if (keyPressed[38]) {
-			paddlePlayer.moveUp = true;
+			playerElem.moveUp = true;
 		}
 		if (keyPressed[40]) {
-			paddlePlayer.moveDown = true;
+			playerElem.moveDown = true;
 		}
 		if (keyPressed[32]) {
-			paddlePlayer.charging = true;
+			playerElem.charging = true;
 		}
 		if (keyPressed[38] && keyPressed[32]) {
-			paddlePlayer.moveUp = true;
-			paddlePlayer.charging = true;
+			playerElem.moveUp = true;
+			playerElem.charging = true;
 		}
 		if (keyPressed[40] && keyPressed[32]) {
-			paddlePlayer.moveDown = true;
-			paddlePlayer.charging = true;
+			playerElem.moveDown = true;
+			playerElem.charging = true;
 		}
 	});
 
 	window.addEventListener('keyup', function(keycode) {
 		keyPressed[keycode.keyCode] = false;
 		if (!keyPressed[38]) {
-			paddlePlayer.moveUp = false;
+			playerElem.moveUp = false;
 		}
 		if (!keyPressed[40]) {
-			paddlePlayer.moveDown = false;
+			playerElem.moveDown = false;
 		}
 		if (!keyPressed[32]) {
-			paddlePlayer.charging = false;
+			playerElem.charging = false;
 		}
 		if (keyPressed[32]) {
-			paddlePlayer.charging = true;
+			playerElem.charging = true;
 		}
 	});
 }
@@ -76,29 +77,19 @@ function chargeSpike() {
 }
 
 function movePlayer() {
-	if (paddlePlayer.moveUp) {
-		paddlePlayer.y -= paddlePlayer.speed;
-	} else if (paddlePlayer.moveDown) {
-		paddlePlayer.y += paddlePlayer.speed;
+	playerElem = session.chosenSide
+	if (playerElem.moveUp) {
+		playerElem.y -= playerElem.speed;
+		sendPaddleLocation(playerElem.colour, playerElem.y);
+	} else if (playerElem.moveDown) {
+		playerElem.y += playerElem.speed;
+		sendPaddleLocation(playerElem.colour, playerElem.y);
 	}
 }
 
 function moveEnemy() {
-	if ((Math.random() < paddleEnemy.difficulty) && !paddleEnemy.hasHit) {
-		paddleEnemy.moveUp = false;
-		paddleEnemy.moveDown = false;
-		if (ball.y + ballHeight < paddleEnemy.y + paddleEnemy.height / 2) {
-			paddleEnemy.moveUp = true;
-		} else if (ball.y > paddleEnemy.y + paddleEnemy.height / 2) {
-			paddleEnemy.moveDown = true;
-		}
-		
-		if (paddleEnemy.moveUp) {
-			paddleEnemy.y -= paddleEnemy.speed;
-		} else if (paddleEnemy.moveDown) {
-			paddleEnemy.y += paddleEnemy.speed;
-		}
-	}
+	enemyColour = session.enemySide.colour;
+	receivePaddleLocation(enemyColour);
 }
 
 function containPaddles() {
