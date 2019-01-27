@@ -97,9 +97,21 @@ function addEventListeners() {
 		keyPressed[keycode.keyCode] = false;
 		if (!keyPressed[38]) {
 			playerElem.moveUp = false;
+			playerMovingUp = false;
+			if (!playerNotMoving) {
+				playerNotMoving = true;
+				sendPaddleLocation(playerElem.colour, playerElem.y);
+				sendPaddleStatus(playerElem.colour, 'none');
+			}
 		}
 		if (!keyPressed[40]) {
 			playerElem.moveDown = false;
+			playerMovingDown = false;
+			if (!playerNotMoving) {
+				playerNotMoving = true;
+				sendPaddleLocation(playerElem.colour, playerElem.y);
+				sendPaddleStatus(playerElem.colour, 'none');
+			}
 		}
 		if (!keyPressed[32]) {
 			playerElem.charging = false;
@@ -128,20 +140,100 @@ function chargeSpike() {
 	}
 }
 
+var playerMovingUp = false;
+var playerMovingDown = false;
+var playerNotMoving = true;
+var enemyMovingUp = false;
+var enemyMovingDown = false;
+var enemyNotMoving = true;
+
 function movePlayer() {
 	playerElem = session.chosenSide
+	playerColour = session.chosenSide.colour;
 	if (playerElem.moveUp) {
+		playerNotMoving = false;
 		playerElem.y -= playerElem.speed;
-		sendPaddleLocation(playerElem.colour, playerElem.y);
+		if (!playerMovingUp) {
+			playerMovingUp = true;
+			playerMovingDown = false;
+			sendPaddleStatus(playerColour, 'up')
+		}
 	} else if (playerElem.moveDown) {
+		playerNotMoving = false;
 		playerElem.y += playerElem.speed;
-		sendPaddleLocation(playerElem.colour, playerElem.y);
+		if (!playerMovingDown) {
+			playerMovingUp = false;
+			playerMovingDown = true;
+			sendPaddleStatus(playerColour, 'down')
+		}
 	}
 }
 
 function moveEnemy() {
+	enemyElem = session.enemySide;
 	enemyColour = session.enemySide.colour;
-	receivePaddleLocation(enemyColour);
+	if (enemyMovingUp === true) {
+		enemyNotMoving = false;
+		enemyElem.y -= enemyElem.speed;
+	} else if (enemyMovingDown === true) {
+		enemyNotMoving = false;
+		enemyElem.y += enemyElem.speed;
+	}
+}
+
+receivePaddleLocation();
+receivePaddleStatus();
+
+function sendPaddleLocation(paddleColour, y) {
+	socket.emit(paddleColour + ' location', y);
+}
+
+function receivePaddleLocation() {
+	socket.on('green location', function(y) {
+		console.log('green location: ' + y);
+		paddlePlayer.y = y;
+	});
+	socket.on('blue location', function(y) {
+		console.log('blue location: ' + y);
+		paddleEnemy.y = y;
+	});
+}
+
+function sendPaddleStatus(paddleColour, status) {
+	socket.emit(paddleColour + ' move status', status);
+}
+
+function receivePaddleStatus() {
+	socket.on('green move status', function(status) {
+		console.log('green move status: ' + status);
+		if (status === 'up') {
+			enemyMovingDown = false;
+			enemyMovingUp = true;
+		}
+		else if (status === 'down') {
+			enemyMovingUp = false;
+			enemyMovingDown = true;
+		}
+		else if (status === 'none') {
+			enemyMovingUp = false;
+			enemyMovingDown = false;
+		}
+	});
+	socket.on('blue move status', function(status) {
+		console.log('blue move status: ' + status);
+		if (status === 'up') {
+			enemyMovingDown = false;
+			enemyMovingUp = true;
+		}
+		else if (status === 'down') {
+			enemyMovingUp = false;
+			enemyMovingDown = true;
+		}
+		else if (status === 'none') {
+			enemyMovingUp = false;
+			enemyMovingDown = false;
+		}
+	});
 }
 
 function containPaddles() {
@@ -296,18 +388,3 @@ function render() {
 init();
 checkBtnStatus();
 checkGameStatus();
-
-function sendPaddleLocation(paddleColour, y) {
-	socket.emit(paddleColour + ' location', y);
-}
-
-function receivePaddleLocation(paddleColour) {
-	socket.on(paddleColour + ' location', function(y) {
-		console.log(paddleColour + ' location: ' + y);
-		if (paddleColour === 'green') {
-			paddlePlayer.y = y;
-		} else if (paddleColour === 'blue') {
-			paddleEnemy.y = y;
-		}
-	});
-}

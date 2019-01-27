@@ -70,6 +70,16 @@ io.on('connection', function(socket) {
 		io.emit('rand ball angle', getRandomArbitrary(-50, 50));
 	});
 
+	socket.on('green move status', function(status) {
+		console.log('green status: ' + status);
+		socket.broadcast.emit('green location', status);
+	});
+
+	socket.on('blue move status', function(status) {
+		console.log('blue status: ' + status);
+		socket.broadcast.emit('blue move status', status);
+	});
+
 	socket.on('green location', function(y) {
 		console.log('green location: ' + y);
 		socket.broadcast.emit('green location', y);
