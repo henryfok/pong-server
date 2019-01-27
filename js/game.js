@@ -72,6 +72,7 @@ function rotateScreen() {
 
 function addEventListeners() {
 	playerElem = session.chosenSide;
+	console.log('chosen player: ' + playerElem.colour);
 	window.addEventListener('keydown', function(keycode) {
 		keyPressed[keycode.keyCode] = true;
 		if (keyPressed[38]) {
@@ -172,10 +173,10 @@ function movePlayer() {
 function moveEnemy() {
 	enemyElem = session.enemySide;
 	enemyColour = session.enemySide.colour;
-	if (enemyMovingUp === true) {
+	if (enemyMovingUp) {
 		enemyNotMoving = false;
 		enemyElem.y -= enemyElem.speed;
-	} else if (enemyMovingDown === true) {
+	} else if (enemyMovingDown) {
 		enemyNotMoving = false;
 		enemyElem.y += enemyElem.speed;
 	}

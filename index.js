@@ -72,7 +72,7 @@ io.on('connection', function(socket) {
 
 	socket.on('green move status', function(status) {
 		console.log('green status: ' + status);
-		socket.broadcast.emit('green location', status);
+		socket.broadcast.emit('green move status', status);
 	});
 
 	socket.on('blue move status', function(status) {
