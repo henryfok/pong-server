@@ -3,27 +3,34 @@ var session = {
 	enemySide: null
 };
 
-$('#multiplayer-green').on('click', function(event) {
-	event.preventDefault();
-	console.log($('#multiplayer-green').text());
-	socket.emit('choose paddle', 'green');
-	session.chosenSide = paddlePlayer;
-	session.enemySide = paddleEnemy;
-	$('#multiplayer-blue').off();
-	$('#multiplayer-green').off();
-	$('#multiplayer-green').css('color', '#808080');
-});
+function addPlayerSelectListener() {
+	$('#multiplayer-green').on();
+	$('#multiplayer-blue').on();
+	$('#multiplayer-green').css('color', '#33FF55');
+	$('#multiplayer-blue').css('color', '#33BBFF');
 
-$('#multiplayer-blue').on('click', function(event) {
-	event.preventDefault();
-	console.log($('#multiplayer-blue').text());
-	socket.emit('choose paddle', 'blue');
-	session.chosenSide = paddleEnemy;
-	session.enemySide = paddlePlayer;
-	$('#multiplayer-green').off();
-	$('#multiplayer-blue').off();
-	$('#multiplayer-blue').css('color', '#808080');
-});
+	$('#multiplayer-green').on('click', function(event) {
+		event.preventDefault();
+		// console.log($('#multiplayer-green').text());
+		socket.emit('choose paddle', 'green');
+		session.chosenSide = paddlePlayer;
+		session.enemySide = paddleEnemy;
+		$('#multiplayer-blue').off();
+		$('#multiplayer-green').off();
+		$('#multiplayer-green').css('color', '#808080');
+	});
+
+	$('#multiplayer-blue').on('click', function(event) {
+		event.preventDefault();
+		// console.log($('#multiplayer-blue').text());
+		socket.emit('choose paddle', 'blue');
+		session.chosenSide = paddleEnemy;
+		session.enemySide = paddlePlayer;
+		$('#multiplayer-green').off();
+		$('#multiplayer-blue').off();
+		$('#multiplayer-blue').css('color', '#808080');
+	});
+}
 
 function checkBtnStatus() {
 	socket.on('choose paddle', function(colour) {
@@ -292,6 +299,7 @@ function resetGame() {
 	ballSpeed = ballSpeedStart;
 	scorePlayer.value = 0;
 	scoreEnemy.value = 0;
+	socket.emit('reset game');
 	init();
 }
 
@@ -299,6 +307,7 @@ var gameStarted = false;
 var musicStarted = false;
 
 function init() {
+	addPlayerSelectListener();
 	document.querySelector('.menu').style.visibility = 'visible';
 	animateCSS('.menu', 'bounceIn', function() {});
 	if (!musicStarted) {

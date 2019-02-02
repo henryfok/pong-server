@@ -6,6 +6,7 @@ var ballSpeed = ballSpeedStart;
 // var ballTragSpeed = Math.sqrt(2 * (ballSpeed * ballSpeed));
 var ballRotateSpeed = 3;
 var randAng = -50;
+var reset = true;
 
 var ball = {
 	// starting ball position and speed
@@ -73,25 +74,31 @@ function containBall() {
 
 	if (ball.x <= 0) {
 		// left wall of the ball hit the left border, reverse horizontal velocity (right)
-		scoreAddOne(scoreEnemy);
+		scoreAddOne('blue');
 		flashElement('.wall-left');
 		// ball.ballSpeed += 1;
 		if (scoreEnemy.value !== scoreMax) {
 			playEnemyScoreSound();
 			dischargeSpike();
-			resetBall();
+			stopBall();
+			socket.emit('reset ball', resetBallAck());
+			// scoreAddOne('blue');
+			// resetBall();
 		}
 		// ball.x = 0;
 		// ball.vx = -ball.vx;
 	} else if (ball.x + ball.width >= gameWidth) {
 		// right wall of the ball hit the right border, reverse horizontal velocity (left)
-		scoreAddOne(scorePlayer);
+		scoreAddOne('green');
 		flashElement('.wall-right');
 		// ball.ballSpeed += 1;
 		if (scorePlayer.value !== scoreMax) {
 			playPlayerScoreSound();
 			dischargeSpike();
-			resetBall();
+			stopBall();
+			socket.emit('reset ball', resetBallAck());
+			// scoreAddOne('green');
+			// resetBall();
 		}
 		// ball.x = gameWidth - ball.width;
 		// ball.vx = -ball.vx;
@@ -157,6 +164,7 @@ function checkCollisions() {
 }
 
 function resetBall() {
+	reset = false;
 	paddlePlayer.hasHit = false;
 	paddleEnemy.hasHit = false;
 	ball.x = gameWidth / 2 - ballWidth / 2;
@@ -174,10 +182,25 @@ function resetBall() {
 }
 
 function stopBall() {
+	reset = true;
 	paddlePlayer.hasHit = false;
 	paddleEnemy.hasHit = false;
 	ball.x = gameWidth / 2 - ballWidth / 2;
 	ball.y = gameHeight / 2 - ballHeight / 2;
 	ball.vx = 0;
 	ball.vy = 0;
+}
+
+socket.on('reset ball', function() {
+	console.log('reset ball');
+	if (reset) {
+		resetBall();
+	}
+});
+
+function resetBallAck() {
+	console.log('confirmed reset ball');
+	if (reset) {
+		resetBall();
+	}
 }

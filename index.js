@@ -21,10 +21,19 @@ app.get('/', function(req, res) {
 var numPlayers = 0;
 var greenChosen = false;
 var blueChosen = false;
+var score = {
+	green: 0,
+	blue: 0
+}
+var addedScore = false;
+var currentAng = getRandomArbitrary(-50, 50);
+var angRefreshed = false;
 
 io.on('connection', function(socket) {
 	console.log('a user connected');
-	socket.on('disconnect', function(){
+	resetScore();
+	
+	socket.on('disconnect', function() {
 		console.log('socket colour: ' + socket.colour);
 		if (socket.colour === 'green') {
 			greenChosen = false;
@@ -35,6 +44,7 @@ io.on('connection', function(socket) {
 			numPlayers--;
 			console.log('removing blue...');
 		}
+		resetScore();
 		console.log('numPlayers: ' + numPlayers);
 		console.log('user disconnected');
 	});
@@ -58,39 +68,83 @@ io.on('connection', function(socket) {
 			blueChosen = true;
 			socket.broadcast.emit('choose paddle', 'blue');
 		}
-		if (numPlayers === 2) {
+		if (greenChosen === true && blueChosen === true) {
 			console.log('game ready!')
 			io.emit('game status', 'ready');
-			io.emit('rand ball angle', getRandomArbitrary(-50, 50));
+			io.emit('rand ball angle', currentAng);
 		}
 	});
 
 	socket.on('new ball ang', function() {
 		console.log('new ball angle');
-		io.emit('rand ball angle', getRandomArbitrary(-50, 50));
+		if (!angRefreshed) {
+			angRefreshed = true;
+			currentAng = getRandomArbitrary(-50, 50);
+		}
+		io.emit('rand ball angle', currentAng);
+		addedScore = false;
 	});
 
 	socket.on('green move status', function(status) {
-		console.log('green status: ' + status);
+		// console.log('green status: ' + status);
 		socket.broadcast.emit('green move status', status);
 	});
 
 	socket.on('blue move status', function(status) {
-		console.log('blue status: ' + status);
+		// console.log('blue status: ' + status);
 		socket.broadcast.emit('blue move status', status);
 	});
 
 	socket.on('green location', function(y) {
-		console.log('green location: ' + y);
+		// console.log('green location: ' + y);
 		socket.broadcast.emit('green location', y);
 	});
 
 	socket.on('blue location', function(y) {
-		console.log('blue location: ' + y);
+		// console.log('blue location: ' + y);
 		socket.broadcast.emit('blue location', y);
+	});
+
+	socket.on('reset ball', function() {
+		console.log(socket.colour + ': reset ball');
+		socket.broadcast.emit('reset ball');
+	});
+
+	socket.on('update score', function(colour) {
+		console.log('update score');
+		// set false in new ball ang
+		if (!addedScore) {
+			if (socket.colour === 'green') {
+				console.log('	> update green');
+				score.green++;
+				addedScore = true;
+			} else if (socket.colour === 'blue') {
+				console.log('	> update blue');
+				score.blue++;
+				addedScore = true;
+			}
+		}
+		socket.broadcast.emit('update score', score);
+	});
+
+	socket.on('reset game', function() {
+		greenChosen = false;
+		blueChosen = false;
+		score.green = 0;
+		score.blue = 0;
+		addedScore = false;
+		currentAng = getRandomArbitrary(-50, 50);
+		angRefreshed = false;
+		console.log('reset game');
 	});
 });
 
 function getRandomArbitrary(min, max) {
 	return Math.random() * (max - min) + min;
+}
+
+function resetScore() {
+	console.log('reset score');
+	score.green = 0;
+	score.blue = 0;
 }
