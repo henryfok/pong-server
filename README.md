@@ -2,19 +2,31 @@
 
 Multiplayer version of pong implemented using Express.js and Socket.IO
 
-npm install
+https://github.com/henryfok/pong
 
-node index.js
+### Demo
 
-http://localhost:3000/
 https://pong-henry.herokuapp.com
 
-Changelog
+### Installation
+
+```sh
+git clone git@github.com:henryfok/pong-server.git
+npm install
+node index.js
+```
+
+```sh
+http://localhost:3000/
+```
+
+
+### Changelog
 - Score now handled by the server and synced to clients
 - Player side selection menu reset
 - Server state reset
 
-To-Do
+### To-Do
 - Round reset still sometimes not syncing
 - Regen random ball angle every round
 - Sync ball location when hitting walls
